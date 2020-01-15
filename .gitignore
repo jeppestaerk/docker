@@ -1,5 +1,8 @@
 bedrock/config
 bedrock/worlds
+pihole/pihole
+pihole/pihole-secret.env
+pihole/dnsmasq
 proxy/letsencrypt
 proxy/letsencrypt-secret.env
 sandbox/
