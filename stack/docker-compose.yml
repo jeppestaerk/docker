@@ -1,0 +1,105 @@
+version: '3.7'
+services:
+  nordvpn: # https://hub.docker.com/r/bubuntux/nordvpn
+    image: bubuntux/nordvpn:amd64-latest
+    container_name: nordvpn
+    cap_add:
+      - net_admin
+    devices:
+      - /dev/net/tun
+    networks:
+      - nordvpn
+    volumes:
+      - ./nordvpn:/vpn
+    env_file: 
+      - nordvpn.env
+      - nordvpn-secret.env
+    ports:
+      - "7878:7878/tcp"
+      - "8112:8112/tcp"
+      - "8989:8989/tcp"
+      - "9117:9117/tcp"
+    restart: unless-stopped
+  # speedtest cmd: docker run --rm --net=container:nordvpn tianon/speedtest
+  deluge: # https://hub.docker.com/r/linuxserver/deluge/
+    image: linuxserver/deluge:amd64-latest
+    container_name: deluge
+    network_mode: service:nordvpn
+    depends_on:
+      - nordvpn
+    volumes:
+      - ./deluge/config:/config
+      - ./deluge/watch:/watch
+      - /mnt/e/Downloads:/downloads
+    environment:
+      - TZ=Europe/Copenhagen
+      - PUID=1000
+      - PGID=1000
+    restart: unless-stopped
+  jackett: # https://hub.docker.com/r/linuxserver/jackett/
+    image: linuxserver/jackett:amd64-latest
+    container_name: jackett
+    network_mode: service:nordvpn
+    depends_on:
+      - nordvpn
+      - deluge
+    volumes:
+      - ./jackett:/config
+      - ./deluge/watch:/downloads
+    environment:
+      - TZ=Europe/Copenhagen
+      - PUID=1000
+      - PGID=1000
+    restart: unless-stopped
+  sonarr: # https://hub.docker.com/r/linuxserver/sonarr/
+    image: linuxserver/sonarr:amd64-latest
+    container_name: sonarr
+    network_mode: service:nordvpn
+    depends_on:
+      - nordvpn
+      - deluge
+      - jackett
+    volumes:
+      - ./sonarr:/config
+      - ./deluge/watch:/watch
+      - /mnt/e/Downloads:/downloads
+      - /mnt/d/Media/Shows:/tv
+    environment:
+      - TZ=Europe/Copenhagen
+      - PUID=1000
+      - PGID=1000
+    restart: unless-stopped
+  radarr: # https://hub.docker.com/r/linuxserver/radarr/
+    image: linuxserver/radarr:amd64-latest
+    container_name: radarr
+    network_mode: service:nordvpn
+    depends_on:
+      - nordvpn
+      - deluge
+      - jackett
+    volumes:
+      - ./radarr:/config
+      - ./deluge/watch:/watch
+      - /mnt/e/Downloads:/downloads
+      - /mnt/d/Media/Movies:/movies
+    environment:
+      - TZ=Europe/Copenhagen
+      - PUID=1000
+      - PGID=1000
+    restart: unless-stopped
+  tautulli:
+    image: linuxserver/tautulli
+    container_name: tautulli
+    environment:
+      - TZ=Europe/Copenhagen
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./tautulli:/config
+      - "/mnt/c/Users/jeppe/AppData/Local/Plex Media Server/Logs:/logs"
+    ports:
+      - "8181:8181/tcp"
+    restart: unless-stopped
+
+networks:
+  nordvpn:

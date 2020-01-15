@@ -1,0 +1,13 @@
+bedrock/config
+bedrock/worlds
+proxy/letsencrypt
+proxy/letsencrypt-secret.env
+sandbox/
+stack/deluge
+stack/jackett
+stack/nordvpn
+stack/nordvpn-secret.env
+stack/radarr
+stack/sonarr
+stack/tautulli
+unifi/config

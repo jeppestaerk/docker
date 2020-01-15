@@ -1,0 +1,19 @@
+version: '3.7'
+services:
+  bedrock_server:
+    container_name: bedrock
+    build:
+      context: .
+      args:
+        BDS_Version: latest
+    networks:
+      - minecraft
+    ports:
+      - "19132:19132/udp"
+    volumes:
+      - ./worlds:/bedrock-server/worlds
+      - ./config:/bedrock-server/config
+    restart: always
+
+networks:
+  minecraft:

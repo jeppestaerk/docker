@@ -1,0 +1,46 @@
+version: '3.7'
+services:
+  letsencrypt: # https://github.com/linuxserver/docker-letsencrypt
+    image: linuxserver/letsencrypt:amd64-latest
+    container_name: letsencrypt
+    networks:
+      - ngnix
+    ports:
+      - "80:80/tcp"
+      - "443:443/tcp"
+    volumes:
+      - ./letsencrypt:/config
+    env_file: 
+      - letsencrypt.env
+      - letsencrypt-secret.env
+    restart: always
+  # redis: # https://hub.docker.com/_/redis used for authelia
+  #   image: redis:alpine
+  #   container_name: redis
+  #   networks:
+  #     - dockernet
+  #   ports:
+  #     - "6379:6379/tcp"
+  #   volumes:
+  #     - /opt/redis:/data
+  #   environment:
+  #     - TZ=Europe/Copenhagen
+  #   restart: always
+  # authelia: # https://github.com/clems4ever/authelia
+  #   image: clems4ever/authelia:master
+  #   container_name: authelia
+  #   networks:
+  #     - dockernet
+  #   depends_on:
+  #     - redis
+  #   ports:
+  #     - "8113:8113/tcp"
+  #   volumes:
+  #     - /opt/authelia/config:/etc/authelia
+  #     - /opt/authelia/lib:/var/lib/authelia
+  #   environment:
+  #     TZ: Europe/Copenhagen
+  #   restart: always
+
+networks:
+  ngnix:
