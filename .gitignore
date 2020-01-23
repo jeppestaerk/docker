@@ -1,5 +1,6 @@
 bedrock/config
 bedrock/worlds
+jupyter/work
 pihole/pihole
 pihole/pihole-secret.env
 pihole/dnsmasq

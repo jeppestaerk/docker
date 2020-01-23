@@ -1,0 +1,15 @@
+version: '3.7'
+services:
+  jupyter: # https://hub.docker.com/r/jupyter/scipy-notebook
+    image: jupyter/scipy-notebook
+    container_name: jupyter
+    networks:
+      - jupyter
+    ports:
+      - "8888:8888/tcp"
+    volumes:
+      - ./work:/home/jovyan
+    restart: unless-stopped
+
+networks:
+  jupyter:
